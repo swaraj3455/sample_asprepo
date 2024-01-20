@@ -34,6 +34,11 @@ jobs:
     if: github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
     runs-on: self-hosted
     steps:
+    - name: Powershell  allow
+      shell: cmd
+      run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+    - name: check powershell version
+      run: $host.Version
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK ${{ env.DOTNET_CORE_VERSION }}
       uses: actions/setup-dotnet@v1
