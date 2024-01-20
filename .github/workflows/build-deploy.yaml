@@ -2,7 +2,7 @@ name: Deploy WebApp
 on:
   push:
     branches:
-    - dev
+      - dev
     paths-ignore:
     - '**/*.md'
     - '**/*.gitignore'
@@ -10,7 +10,7 @@ on:
     - '**/translations.yaml'
   workflow_dispatch:
     branches:
-    - dev
+      - dev
     paths-ignore:
     - '**/*.md'
     - '**/*.gitignore'
