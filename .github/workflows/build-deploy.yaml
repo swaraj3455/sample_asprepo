@@ -17,7 +17,7 @@ on:
     - '**/*.gitattributes'
 
 env:
-  AZURE_WEBAPP_NAME: samplewebapp-dev1
+  AZURE_WEBAPP_NAME: ${{ env.WEBAPP_NAME }} 
   AZURE_WEBAPP_PACKAGE_PATH: ./published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 5.0.x
@@ -60,7 +60,7 @@ jobs:
 
   dev:
     needs: build
-    name: Deploy to staging
+    name: Deploy to Dev
     environment:
         name: dev
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -86,31 +86,31 @@ jobs:
       run: |
         az logout
 
-  #prod:
-  #  needs: dev
-  #  environment:
-  #    name: prod
-  #    url: ${{ steps.deploy_production.outputs.webapp-url }}
-  #  name: Deploy to production
-  #  runs-on: self-hosted
-  #  steps:
-  #  # Download artifacts
-  #  - name: Download artifacts
-  #    uses: actions/download-artifact@v2
-  #    with:
-  #      name: webapp
+  test:
+    needs: dev
+    environment:
+      name: test
+      url: ${{ steps.deploy_production.outputs.webapp-url }}
+    name: Deploy to Test
+    runs-on: self-hosted
+    steps:
+    # Download artifacts
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: webapp
 
     # Login to Azure
-  #  - uses: azure/login@v1
-  #        with:
-  #          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
     # Deploy to Azure webapp
-  #  - name: Run Azure webapp deploy action using Azure Credentials
-  #    uses: azure/webapps-deploy@v2
-  #    with: 
-  #      app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-  #      package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+    - name: Run Azure webapp deploy action using Azure Credentials
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
       
-  #  - name: logout
-  #    run: |
-  #      az logout
+    - name: logout
+      run: |
+        az logout
