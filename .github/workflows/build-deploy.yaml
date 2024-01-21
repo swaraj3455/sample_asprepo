@@ -89,8 +89,8 @@ jobs:
   test:
     needs: dev
     environment:
-      name: test
-      url: ${{ steps.deploy_production.outputs.webapp-url }}
+        name: test
+        url: ${{ steps.deploy_production.outputs.webapp-url }}
     name: Deploy to Test
     runs-on: self-hosted
     steps:
