@@ -102,8 +102,8 @@ jobs:
 
     # Login to Azure
     - uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     # Deploy to Azure webapp
     - name: Run Azure webapp deploy action using Azure Credentials
       uses: azure/webapps-deploy@v2
