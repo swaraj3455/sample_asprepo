@@ -27,29 +27,29 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action != 'closed' 
     runs-on: self-hosted
     steps:
-    - name: Powershell  allow
-      shell: cmd
-      run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
-    - name: check powershell version
-      run: $host.Version
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core SDK ${{ env.DOTNET_CORE_VERSION }}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name: Restore packages
-      run: dotnet restore "${{ env.PROJECT_PATH }}"
-    - name: Build app
-      run: dotnet build "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Test app
-      run: dotnet test "${{ env.PROJECT_PATH }}" --no-build
-    - name: Publish app for deploy
-      run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
-    - name: Publish Artifacts
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      - name: Powershell  allow
+        shell: cmd
+        run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+      - name: check powershell version
+        run: $host.Version
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core SDK ${{ env.DOTNET_CORE_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+      - name: Restore packages
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
+      - name: Build app
+        run: dotnet build "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Test app
+        run: dotnet test "${{ env.PROJECT_PATH }}" --no-build
+      - name: Publish app for deploy
+        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   dev:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -60,25 +60,25 @@ jobs:
       url: ${{ steps.deploy_staging.outputs.webapp-url }}
     runs-on: self-hosted
     steps:
-    # Download artifacts
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: webapp
-    # Login to Azure
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    # Deploy to Azure webapp
-    - name: Run Azure webapp deploy action using Azure Credentials
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-      
-    - name: logout
-      run: |
-        az logout
+      # Download artifacts
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webapp
+      # Login to Azure
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Deploy to Azure webapp
+      - name: Run Azure webapp deploy action using Azure Credentials
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        
+      - name: logout
+        run: |
+          az logout
 
   test:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -89,26 +89,26 @@ jobs:
     name: Deploy to Test
     runs-on: self-hosted
     steps:
-    # Download artifacts
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: webapp
+      # Download artifacts
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webapp
 
-    # Login to Azure
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    # Deploy to Azure webapp
-    - name: Run Azure webapp deploy action using Azure Credentials
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-      
-    - name: logout
-      run: |
-        az logout
+      # Login to Azure
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Deploy to Azure webapp
+      - name: Run Azure webapp deploy action using Azure Credentials
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        
+      - name: logout
+        run: |
+          az logout
 
   prod:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -120,22 +120,22 @@ jobs:
     runs-on: self-hosted
     steps:
     # Download artifacts
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: webapp
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webapp
 
-    # Login to Azure
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    # Deploy to Azure webapp
-    - name: Run Azure webapp deploy action using Azure Credentials
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-      
-    - name: logout
-      run: |
-        az logout
+      # Login to Azure
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Deploy to Azure webapp
+      - name: Run Azure webapp deploy action using Azure Credentials
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        
+      - name: logout
+        run: |
+          az logout
