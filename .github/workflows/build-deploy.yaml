@@ -1,12 +1,5 @@
 name: dotnetcore Deploy
-on:
-  push:
-    branches:
-      - dev
-      - test
-      - prod
-    paths: 'sample-workflow-deploy/**'
-    
+on:  
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
@@ -31,7 +24,7 @@ env:
 jobs:
   build:
     name: Build
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') 
+    if: github.event_name == 'pull_request' && github.event.action != 'closed' 
     runs-on: self-hosted
     steps:
     - name: Powershell  allow
