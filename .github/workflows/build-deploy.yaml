@@ -52,7 +52,7 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   dev:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs: build
     name: Deploy to Dev
     environment:
@@ -81,7 +81,7 @@ jobs:
           az logout
 
   test:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs: dev
     environment:
       name: test
@@ -111,7 +111,7 @@ jobs:
           az logout
 
   prod:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs: test
     environment:
       name: prod
