@@ -1,4 +1,4 @@
-name: dotnetcore cicd deployment 
+name: dotnetcore Deploy
 on:
   push:
     branches:
