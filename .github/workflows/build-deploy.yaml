@@ -3,17 +3,23 @@ on:
   push:
     branches:
       - dev
+      - test
+      - prod
     paths: 'sample-workflow-deploy/**'
     
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - 'dev'
+      - 'test'
+      - 'prod'
     paths: 'sample-workflow-deploy/**'
 
   workflow_dispatch:
     branches:
       - dev
+      - test
+      - prod
     
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
