@@ -1,4 +1,4 @@
-name: Deploy WebApp
+name: dotnetcore cicd deployment 
 on:
   push:
     branches:
