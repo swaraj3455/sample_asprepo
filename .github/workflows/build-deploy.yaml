@@ -3,35 +3,29 @@ on:
   push:
     branches:
       - dev
-    paths-ignore:
-    - '**/*.md'
-    - '**/*.gitignore'
-    - '**/*.gitattributes'
-    - '**/translations.yaml'
+    paths: 'sample-workflow-deploy/**'
+    
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - 'dev'
+    paths: 'sample-workflow-deploy/**'
+
   workflow_dispatch:
     branches:
       - dev
-    paths-ignore:
-    - '**/*.md'
-    - '**/*.gitignore'
-    - '**/*.gitattributes'
-
+    
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
   AZURE_WEBAPP_PACKAGE_PATH: ./published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 5.0.x
   PROJECT_PATH: sample-workflow-deploy/sample-workflow-deploy.csproj
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_NOLOGO: true
-  DOTNET_GENERATE_ASPNET_CERTIFICATE: false
-  DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: false
-  DOTNET_MULTILEVEL_LOOKUP: 0
+  
 jobs:
   build:
     name: Build
-    if: github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') 
     runs-on: self-hosted
     steps:
     - name: Powershell  allow
@@ -62,8 +56,8 @@ jobs:
     needs: build
     name: Deploy to Dev
     environment:
-        name: dev
-        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+      name: dev
+      url: ${{ steps.deploy_staging.outputs.webapp-url }}
     runs-on: self-hosted
     steps:
     # Download artifacts
@@ -89,8 +83,8 @@ jobs:
   test:
     needs: dev
     environment:
-        name: test
-        url: ${{ steps.deploy_production.outputs.webapp-url }}
+      name: test
+      url: ${{ steps.deploy_production.outputs.webapp-url }}
     name: Deploy to Test
     runs-on: self-hosted
     steps:
@@ -118,8 +112,8 @@ jobs:
   prod:
     needs: test
     environment:
-        name: prod
-        url: ${{ steps.deploy_production.outputs.webapp-url }}
+      name: prod
+      url: ${{ steps.deploy_production.outputs.webapp-url }}
     name: Deploy to Prod
     runs-on: self-hosted
     steps:
