@@ -1,7 +1,6 @@
 name: dotnetcore Deploy prod
 on:  
   pull_request:
-    types: [opened, synchronize, reopened, closed]
     branches:
       - 'prod'
     paths: 'sample-workflow-deploy/**'
