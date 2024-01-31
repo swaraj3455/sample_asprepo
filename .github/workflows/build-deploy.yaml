@@ -52,7 +52,7 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   dev:
-    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    if: github.event_name == 'workflow_dispatch' 
     needs: build
     name: Deploy to Dev
     environment:
