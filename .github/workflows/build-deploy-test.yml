@@ -1,4 +1,4 @@
-name: dotnetcore Deploy
+name: dotnetcore Deploy test
 on:  
   pull_request:
     types: [opened, synchronize, reopened, closed]
