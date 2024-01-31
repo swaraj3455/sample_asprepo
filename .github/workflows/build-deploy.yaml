@@ -9,10 +9,12 @@ on:
     paths: 'sample-workflow-deploy/**'
 
   workflow_dispatch:
-    branches:
-      - dev
-      - test
-      - prod
+    inputs:
+      parameter_name:
+        description: 'Description of your parameter'
+        required: false
+        default: 'default_value'
+
     
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
@@ -51,8 +53,7 @@ jobs:
           name: webapp
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-  dev:
-    if: github.event_name == 'workflow_dispatch' 
+  dev: 
     needs: build
     name: Deploy to Dev
     environment:
