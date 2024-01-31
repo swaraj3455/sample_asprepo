@@ -1,0 +1,81 @@
+name: dotnetcore Deploy
+on:  
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - 'test'
+    paths: 'sample-workflow-deploy/**'
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The environment to deploy to (e.g. production, staging)'
+        required: true
+
+    
+env:
+  AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
+  AZURE_WEBAPP_PACKAGE_PATH: ./published
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 5.0.x
+  PROJECT_PATH: sample-workflow-deploy/sample-workflow-deploy.csproj
+  
+jobs:
+  build:
+    name: Build
+    #if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: self-hosted
+    steps:
+      - name: Powershell  allow
+        shell: cmd
+        run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+      - name: check powershell version
+        run: $host.Version
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core SDK ${{ env.DOTNET_CORE_VERSION }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+      - name: Restore packages
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
+      - name: Build app
+        run: dotnet build "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+      - name: Test app
+        run: dotnet test "${{ env.PROJECT_PATH }}" --no-build
+      - name: Publish app for deploy
+        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+  test:
+    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    needs: build
+    environment:
+      name: test
+      url: ${{ steps.deploy_production.outputs.webapp-url }}
+    name: Deploy to Test
+    runs-on: self-hosted
+    steps:
+      # Download artifacts
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webapp
+
+      # Login to Azure
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Deploy to Azure webapp
+      - name: Run Azure webapp deploy action using Azure Credentials
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        
+      - name: logout
+        run: |
+          az logout
