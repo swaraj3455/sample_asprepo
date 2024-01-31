@@ -1,7 +1,6 @@
 name: dotnetcore Deploy dev
 on:  
   pull_request:
-    types: [opened, synchronize, reopened, closed]
     branches:
       - 'dev'
     paths: 'sample-workflow-deploy/**'
