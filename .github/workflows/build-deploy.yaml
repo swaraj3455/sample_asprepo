@@ -10,10 +10,9 @@ on:
 
   workflow_dispatch:
     inputs:
-      parameter_name:
-        description: 'Description of your parameter'
-        required: false
-        default: 'default_value'
+      environment:
+        description: 'The environment to deploy to (e.g. production, staging)'
+        required: true
 
     
 env:
@@ -26,7 +25,7 @@ env:
 jobs:
   build:
     name: Build
-    if: github.event.name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     runs-on: self-hosted
     steps:
       - name: Powershell  allow
