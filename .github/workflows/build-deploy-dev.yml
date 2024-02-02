@@ -1,4 +1,4 @@
-name: dotnetcore Deploy dev
+name: dotnetcore deploy dev
 on:  
   pull_request:
     branches:
