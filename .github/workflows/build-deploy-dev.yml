@@ -7,10 +7,8 @@ on:
     paths: 'sample-workflow-deploy/**'
 
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'The environment to deploy to (e.g. production, staging)'
-        required: true
+    bramches:
+      - dev
 
     
 env:
@@ -23,7 +21,7 @@ env:
 jobs:
   build:
     name: Build
-    #if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     runs-on: self-hosted
     steps:
       - name: Powershell  allow
@@ -50,7 +48,8 @@ jobs:
           name: webapp
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-  dev: 
+  dev:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs: build
     name: Deploy to Dev
     environment:
