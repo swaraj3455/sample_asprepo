@@ -7,7 +7,7 @@ on:
     paths: 'sample-workflow-deploy/**'
 
   workflow_dispatch:
-    bramches:
+    branches:
       - dev
 
     
