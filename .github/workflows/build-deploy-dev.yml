@@ -42,7 +42,6 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   dev:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs: build
     name: Deploy to Dev
     environment:
