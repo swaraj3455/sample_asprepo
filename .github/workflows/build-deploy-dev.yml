@@ -4,6 +4,10 @@ on:
     branches:
       - 'dev'
     paths: 'sample-workflow-deploy/**'
+
+  workflow_dispatch:
+    branches:
+      - dev
     
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
