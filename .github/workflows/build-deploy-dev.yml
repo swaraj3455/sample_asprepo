@@ -4,11 +4,6 @@ on:
     branches:
       - 'dev'
     paths: 'sample-workflow-deploy/**'
-
-  workflow_dispatch:
-    branches:
-      - dev
-
     
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
@@ -48,6 +43,7 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   dev:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs: build
     name: Deploy to Dev
     environment:
