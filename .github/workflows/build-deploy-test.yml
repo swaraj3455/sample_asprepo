@@ -1,7 +1,6 @@
 name: dotnetcore Deploy test
 on:  
   pull_request:
-    types: [opened, synchronize, reopened, closed]
     branches:
       - 'test'
     paths: 'sample-workflow-deploy/**'
