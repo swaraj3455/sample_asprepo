@@ -15,7 +15,6 @@ env:
 jobs:
   build:
     name: Build
-    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     runs-on: self-hosted
     steps:
       - name: Powershell  allow
