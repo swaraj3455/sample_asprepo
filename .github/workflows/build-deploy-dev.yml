@@ -1,6 +1,11 @@
 name: dotnetcore deploy dev
-on:  
+
+on:
+  push:
+    branches:
+      - dev  
   pull_request:
+    types: [opened,closed]
     branches:
       - 'dev'
     paths: 'sample-workflow-deploy/**'
@@ -19,6 +24,7 @@ env:
 jobs:
   build:
     name: Build
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: self-hosted
     steps:
       - name: Powershell  allow
@@ -46,6 +52,7 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   dev:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed')
     needs: build
     name: Deploy to Dev
     environment:
