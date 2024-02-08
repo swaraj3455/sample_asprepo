@@ -1,18 +1,16 @@
-name: dotnetcore Deploy
+name: dotnetcore Deploy test
 on:  
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
+  push:
     branches:
-      - 'dev'
+      - test
+  pull_request:
+    branches:
       - 'test'
-      - 'prod'
     paths: 'sample-workflow-deploy/**'
 
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'The environment to deploy to (e.g. production, staging)'
-        required: true
+    branches:
+      - test
 
     
 env:
@@ -25,7 +23,7 @@ env:
 jobs:
   build:
     name: Build
-    #if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: self-hosted
     steps:
       - name: Powershell  allow
@@ -52,37 +50,9 @@ jobs:
           name: webapp
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-  dev: 
-    needs: build
-    name: Deploy to Dev
-    environment:
-      name: dev
-      url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    runs-on: self-hosted
-    steps:
-      # Download artifacts
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: webapp
-      # Login to Azure
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      # Deploy to Azure webapp
-      - name: Run Azure webapp deploy action using Azure Credentials
-        uses: azure/webapps-deploy@v2
-        with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-        
-      - name: logout
-        run: |
-          az logout
-
   test:
-    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    needs: dev
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed')
+    needs: build
     environment:
       name: test
       url: ${{ steps.deploy_production.outputs.webapp-url }}
@@ -90,36 +60,6 @@ jobs:
     runs-on: self-hosted
     steps:
       # Download artifacts
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: webapp
-
-      # Login to Azure
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      # Deploy to Azure webapp
-      - name: Run Azure webapp deploy action using Azure Credentials
-        uses: azure/webapps-deploy@v2
-        with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-        
-      - name: logout
-        run: |
-          az logout
-
-  prod:
-    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    needs: test
-    environment:
-      name: prod
-      url: ${{ steps.deploy_production.outputs.webapp-url }}
-    name: Deploy to Prod
-    runs-on: self-hosted
-    steps:
-    # Download artifacts
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
