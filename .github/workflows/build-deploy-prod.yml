@@ -1,17 +1,12 @@
 name: dotnetcore Deploy prod
-on:  
+on:
+  push:
+    branches:
+      - prod    
   pull_request:
-    types: [opened, synchronize, reopened, closed]
     branches:
       - 'prod'
     paths: 'sample-workflow-deploy/**'
-
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'The environment to deploy to (e.g. production, staging)'
-        required: true
-
     
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
@@ -23,7 +18,7 @@ env:
 jobs:
   build:
     name: Build
-    #if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: self-hosted
     steps:
       - name: Powershell  allow
@@ -51,7 +46,7 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   prod:
-    #if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed')
     needs: build
     environment:
       name: prod
