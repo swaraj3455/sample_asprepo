@@ -3,7 +3,9 @@ name: dotnetcore deploy dev
 on:
   push:
     branches:
-      - dev  
+      - dev 
+    paths: 'sample-workflow-deploy/**'
+    
   pull_request:
     branches:
       - 'dev'
