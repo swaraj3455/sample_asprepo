@@ -12,7 +12,7 @@ on:
     paths: 'sample-workflow-deploy/**'
   
   schedule:
-     - cron: '5 * * * *'
+     - cron: '50 5 * * *'
 
   workflow_dispatch:
     branches:
