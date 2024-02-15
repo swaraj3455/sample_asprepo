@@ -1,9 +1,21 @@
 name: dotnetcore deploy dev
 
 on:
-  schedule:
-     - cron: '0 6 * * *'
+  
     
+  push:
+    branches:
+      - dev
+    paths: 'sample-workflow-deploy/**'
+
+  pull_request:
+    branches:
+      - 'dev'
+    paths: 'sample-workflow-deploy/**'
+
+  workflow_dispatch:
+    branches:
+      - dev
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }} 
   AZURE_WEBAPP_PACKAGE_PATH: ./published
@@ -20,6 +32,9 @@ jobs:
       - name: Powershell  allow
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
+      - name: Powershell  Install ExchangeOnlineManagement
+        shell: cmd
+        run: powershell -Command "Install-Module ExchangeOnlineManagement -Scope CurrentUser"
       - name: check powershell version
         run: $host.Version
       - uses: actions/checkout@v2
