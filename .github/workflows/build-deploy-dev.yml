@@ -32,13 +32,12 @@ jobs:
       - name: Powershell  allow
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
-      - name: Run PowerShell script
-        uses: azure/powershell@v1
-        with:
-          inlineScript: |
-            Install-Module ExchangeOnlineManagement -Scope CurrentUser -Force -AllowClobber
       - name: check powershell version
         run: $host.Version
+      - name: Set up PowerShell
+        uses: microsoft/setup-powershell@v1
+      - name: Install ExchangeOnlineManagement module
+        run: Install-Module ExchangeOnlineManagement -Scope CurrentUser -Force -AllowClobber
       - uses: actions/checkout@v2
       - name: Setup .NET Core SDK ${{ env.DOTNET_CORE_VERSION }}
         uses: actions/setup-dotnet@v1
