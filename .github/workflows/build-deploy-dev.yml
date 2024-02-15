@@ -10,6 +10,9 @@ on:
     branches:
       - 'dev'
     paths: 'sample-workflow-deploy/**'
+  
+  schedule:
+     - cron: '0 11 * * *'
 
   workflow_dispatch:
     branches:
