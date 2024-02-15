@@ -32,9 +32,11 @@ jobs:
       - name: Powershell  allow
         shell: cmd
         run: powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
-      - name: Powershell  Install ExchangeOnlineManagement
-        shell: cmd
-        run: powershell -Command "Install-Module ExchangeOnlineManagement -Scope CurrentUser"
+      - name: Run PowerShell script
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            Install-Module ExchangeOnlineManagement -Scope CurrentUser -Force -AllowClobber
       - name: check powershell version
         run: $host.Version
       - uses: actions/checkout@v2
