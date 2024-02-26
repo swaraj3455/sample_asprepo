@@ -47,7 +47,7 @@ jobs:
       - name: Publish Artifacts
         uses: actions/upload-artifact@v1.0.0
         with:
-          name: webapp
+          name: ${{env.AZURE_WEBAPP_NAME}}
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   test:
@@ -63,7 +63,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: webapp
+          name: ${{env.AZURE_WEBAPP_NAME}}
 
       # Login to Azure
       - uses: azure/login@v1
